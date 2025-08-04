@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Hosanna FM</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Three.js para el fondo 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- ...existing code... -->
+    <link rel="icon" type="image/png" href="RadioHosanna.png">
+    <!-- ...existing code... -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        html, body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100%;
+        }
+        #bg-canvas {    
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            display: block;
+        }
+        .main-content {
+            position: relative;
+            z-index: 1;
+        }
+        .glow-effect {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+        .text-gradient-gold {
+            background-image: linear-gradient(to right, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text; /* Para Firefox */
+            color: transparent;    /* Para Firefox */
+        }
+        .player-visualizer {
+            width: 40px;
+            height: 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+        .player-visualizer .bar {
+            width: 5px;
+            height: 5px;
+            background-color: #FFD700;
+            border-radius: 2.5px;
+            animation: none;
+        }
+        .player-visualizer.playing .bar {
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+        .player-visualizer.playing .bar:nth-child(2) { animation-delay: -0.8s; }
+        .player-visualizer.playing .bar:nth-child(3) { animation-delay: -0.6s; }
+        .player-visualizer.playing .bar:nth-child(4) { animation-delay: -0.4s; }
+        .player-visualizer.playing .bar:nth-child(5) { animation-delay: -0.2s; }
+
+        @keyframes pulse {
+            0% { height: 5px; }
+            100% { height: 20px; }
+        }
+
+        /* Mejoras para móviles */
+        @media (max-width: 640px) {
+            .main-content {
+                padding: 1rem !important;
+            }
+            header img {
+                width: 120px !important;
+                max-width: 80vw;
+            }
+            header h1 {
+                font-size: 2rem !important;
+            }
+            .player-visualizer {
+                width: 28px;
+                height: 14px;
+            }
+            .player-visualizer .bar {
+                width: 3px;
+                border-radius: 1.5px;
+            }
+            .fixed-audio {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 0.5rem 0.5rem !important;
+            }
+            .fixed-audio .flex {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            .fixed-audio .hidden.md\:flex {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-300">
+
+    <!-- Canvas para el fondo 3D de three.js -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Contenido principal de la página -->
+    <div class="main-content min-h-screen flex flex-col items-center justify-center p-2 md:p-8">
+
+        <!-- Sección del Encabezado (Hero Section) -->
+        <header class="text-center mb-8 md:mb-12">
+            <img src="RadioHosanna.png" alt="Logo de Radio Hosanna FM" class="mx-auto w-32 md:w-64 mb-4 md:mb-6 rounded-2xl shadow-2xl transition-transform duration-500 hover:scale-105">
+            <h1 class="text-3xl md:text-6xl font-bold text-white mb-2 glow-effect">
+                Radio Hosanna FM
+            </h1>
+            <p class="text-base md:text-xl text-gray-400 font-light">
+                Tu Conexión con la Esperanza
+            </p>
+        </header>
+
+        <!-- Sección de Información (Ejemplo) -->
+        <section class="max-w-3xl mx-auto text-center p-4 md:p-8 bg-gray-800 bg-opacity-70 rounded-3xl shadow-xl backdrop-blur-sm mb-8 md:mb-12">
+            <h2 class="text-2xl md:text-4xl font-bold text-white text-gradient-gold mb-2 md:mb-4">Acerca de Nosotros</h2>
+            <p class="text-sm md:text-lg leading-relaxed">
+                Hosanna FM es una radio online cristiana dedicada a llevar un mensaje de fe, esperanza y amor a través de la mejor música y programas edificantes. Nuestra misión es ser un faro de luz en tu día a día, acompañándote con melodías que inspiran el alma y palabras que transforman vidas. Sintonízanos 24/7 y déjate envolver por la presencia de Dios.
+            </p>
+        </section>
+
+        <!-- Sección de Programación (Ejemplo) -->
+        <section class="max-w-3xl mx-auto text-center p-4 md:p-8 bg-gray-800 bg-opacity-70 rounded-3xl shadow-xl backdrop-blur-sm mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-4xl font-bold text-white text-gradient-gold mb-4 md:mb-6">Programación</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 text-left">
+                <div class="p-4 md:p-6 bg-gray-900 rounded-2xl border-l-4 border-yellow-500 shadow-lg">
+                    <h3 class="text-lg md:text-xl font-bold text-white">Mañanas de Fe</h3>
+                    <p class="text-gray-400 text-xs md:text-base">5:00 AM - 9:00 AM</p>
+                    <p class="mt-2 text-xs md:text-sm">Inicia tu día con alabanzas y reflexiones para fortalecer tu espíritu.</p>
+                </div>
+                <div class="p-4 md:p-6 bg-gray-900 rounded-2xl border-l-4 border-yellow-500 shadow-lg">
+                    <h3 class="text-lg md:text-xl font-bold text-white">Conexión Divina</h3>
+                    <p class="text-gray-400 text-xs md:text-base">9:00 AM - 1:00 PM</p>
+                    <p class="mt-2 text-xs md:text-sm">Un espacio para la oración y el estudio de la palabra.</p>
+                </div>
+                <div class="p-4 md:p-6 bg-gray-900 rounded-2xl border-l-4 border-yellow-500 shadow-lg">
+                    <h3 class="text-lg md:text-xl font-bold text-white">Tarde de Esperanza</h3>
+                    <p class="text-gray-400 text-xs md:text-base">1:00 PM - 5:00 PM</p>
+                    <p class="mt-2 text-xs md:text-sm">Disfruta de la mejor música cristiana contemporánea.</p>
+                </div>
+                <div class="p-4 md:p-6 bg-gray-900 rounded-2xl border-l-4 border-yellow-500 shadow-lg">
+                    <h3 class="text-lg md:text-xl font-bold text-white">Noche de Adoración</h3>
+                    <p class="text-gray-400 text-xs md:text-base">5:00 PM - 10:00 PM</p>
+                    <p class="mt-2 text-xs md:text-sm">Termina el día con un tiempo de adoración profunda.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Reproductor de audio fijo en la parte inferior -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-90 backdrop-blur-sm p-2 md:p-4 border-t border-gray-700 flex items-center justify-between shadow-2xl fixed-audio z-50">
+        <audio id="radio-player" src="https://stream.zeno.fm/nki5fl2uyortv" autoplay loop></audio>
+
+        <div class="flex items-center space-x-2 md:space-x-4">
+            <button id="play-pause-btn" class="bg-yellow-500 text-gray-900 p-2 md:p-3 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-500 focus:ring-opacity-50">
+                <i id="play-pause-icon" class="fas fa-pause text-lg md:text-xl"></i>
+            </button>
+            <div class="hidden md:flex flex-col">
+                <span class="text-xs md:text-sm font-bold text-white">Ahora sonando...</span>
+                <span class="text-xs text-gray-400">Hosanna FM en vivo</span>
+            </div>
+        </div>
+
+        <div id="player-visualizer" class="player-visualizer playing mr-1 md:mr-8">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // --- Lógica del fondo 3D con Three.js ---
+
+            let scene, camera, renderer, particles;
+            const canvas = document.getElementById('bg-canvas');
+            const particleCount = 2000;
+            const particleGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            // Configuración inicial de la escena 3D
+            function initThreeJs() {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                // Posición de la cámara
+                camera.position.z = 200;
+
+                // Crear las partículas con posiciones, colores y tamaños aleatorios
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 500;
+                    positions[i + 1] = (Math.random() - 0.5) * 500;
+                    positions[i + 2] = (Math.random() - 0.5) * 500;
+
+                    const color = new THREE.Color();
+                    color.setHSL(Math.random() * 0.1 + 0.08, 1, Math.random() * 0.5 + 0.5); // Tonos dorados/anaranjados
+                    colors[i] = color.r;
+                    colors[i + 1] = color.g;
+                    colors[i + 2] = color.b;
+                    
+                    sizes[i / 3] = Math.random() * 3 + 1; // Tamaño de las partículas
+                }
+
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+                const particleMaterial = new THREE.PointsMaterial({
+                    size: 3,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending,
+                    sizeAttenuation: true
+                });
+
+                particles = new THREE.Points(particleGeometry, particleMaterial);
+                scene.add(particles);
+
+                // Manejar el redimensionamiento de la ventana
+                window.addEventListener('resize', onWindowResize, false);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            // Bucle de animación para las partículas
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Mover y rotar las partículas para dar un efecto dinámico
+                particles.rotation.y += 0.0005;
+                particles.rotation.x += 0.0002;
+
+                renderer.render(scene, camera);
+            }
+
+            initThreeJs();
+            animate();
+
+            // --- Lógica del reproductor de audio ---
+
+            const audio = document.getElementById('radio-player');
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const playPauseIcon = document.getElementById('play-pause-icon');
+            const visualizer = document.getElementById('player-visualizer');
+
+            playPauseBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().catch(error => {
+                        console.error('Error al intentar reproducir el audio:', error);
+                        // Mostrar un mensaje de error o una indicación al usuario
+                    });
+                } else {
+                    audio.pause();
+                }
+            });
+
+            audio.addEventListener('play', () => {
+                playPauseIcon.classList.remove('fa-play');
+                playPauseIcon.classList.add('fa-pause');
+                visualizer.classList.add('playing');
+            });
+
+            audio.addEventListener('pause', () => {
+                playPauseIcon.classList.remove('fa-pause');
+                playPauseIcon.classList.add('fa-play');
+                visualizer.classList.remove('playing');
+            });
+            
+            // Si el audio está en autoplay y ya está sonando, ajustar el estado inicial
+            if (!audio.paused) {
+                visualizer.classList.add('playing');
+            }
+        };
+    </script>
+</body>
